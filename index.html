@@ -2,67 +2,114 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Input Bank Soal Prakarya</title>
+    <title>Ujian Online Sekolah</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #eef2f3; padding: 40px; }
-        .form-container { max-width: 500px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #333; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; padding: 20px; }
+        .container { max-width: 700px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .hidden { display: none; }
         .input-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
-        input[type="text"], textarea, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background: #3498db; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; margin-top: 10px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; }
+        input, select { width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; }
+        .soal-item { background: #fafafa; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #3498db; }
+        button { background: #3498db; color: white; border: none; padding: 12px 20px; border-radius: 5px; cursor: pointer; width: 100%; font-size: 16px; }
         button:hover { background: #2980b9; }
     </style>
 </head>
 <body>
 
-<div class="form-container">
-    <h2>Input Soal Baru</h2>
-    <form id="soalForm" action="https://script.google.com/macros/s/AKfycbzF0UERX17GneZxHMriGipdr5ryKtrGw_ekL0Im_KMYtQGINpI7a9jIw2KJ9YT2j44I7w/exec" method="POST">
-        
+<div class="container">
+    <div id="biodata-section">
+        <h2>Biodata Peserta Ujian</h2>
         <div class="input-group">
-            <label>Pertanyaan:</label>
-            <textarea name="pertanyaan" rows="3" required placeholder="Tulis soal di sini..."></textarea>
+            <label>Nama Lengkap:</label>
+            <input type="text" id="nama" required>
         </div>
-
         <div class="input-group">
-            <label>Opsi A:</label>
-            <input type="text" name="opsiA" required>
-        </div>
-
-        <div class="input-group">
-            <label>Opsi B:</label>
-            <input type="text" name="opsiB" required>
-        </div>
-
-        <div class="input-group">
-            <label>Opsi C:</label>
-            <input type="text" name="opsiC" required>
-        </div>
-
-        <div class="input-group">
-            <label>Opsi D:</label>
-            <input type="text" name="opsiD" required>
-        </div>
-
-        <div class="input-group">
-            <label>Jawaban Benar:</label>
-            <select name="jawaban">
-                <option value="A">Opsi A</option>
-                <option value="B">Opsi B</option>
-                <option value="C">Opsi C</option>
-                <option value="D">Opsi D</option>
+            <label>Kelas:</label>
+            <select id="kelas">
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
             </select>
         </div>
+        <div class="input-group">
+            <label>Mata Pelajaran:</label>
+            <select id="mapel">
+                <option value="Prakarya">Prakarya</option>
+                <option value="TIK">TIK</option>                
+            </select>
+        </div>
+        <button onclick="ambilSoal()">Mulai Ujian</button>
+    </div>
 
-        <button type="submit">Simpan ke Spreadsheet</button>
-    </form>
+    <div id="quiz-section" class="hidden">
+        <h2 id="judul-ujian"></h2>
+        <form id="formUjian">
+            <div id="tempat-soal"></div>
+            <button type="submit">Kirim Jawaban</button>
+        </form>
+    </div>
 </div>
 
 <script>
-    document.getElementById('soalForm').onsubmit = function() {
-        alert("Mengirim data soal ke Spreadsheet...");
-    };
+    const scriptURL = 'URL_WEB_APP_ANDA_DISINI'; // GANTI DENGAN URL DEPLOY ANDA
+
+    function ambilSoal() {
+        const kelas = document.getElementById('kelas').value;
+        const mapel = document.getElementById('mapel').value;
+        const nama = document.getElementById('nama').value;
+
+        if(!nama) return alert("Isi nama dulu!");
+
+        document.getElementById('biodata-section').classList.add('hidden');
+        document.getElementById('quiz-section').classList.remove('hidden');
+        document.getElementById('judul-ujian').innerText = `Ujian ${mapel} - Kelas ${kelas}`;
+
+        // Mengambil data dari Google Sheets via API GET
+        fetch(`${scriptURL}?kelas=${kelas}&mapel=${mapel}`)
+        .then(res => res.json())
+        .then(data => {
+            const container = document.getElementById('tempat-soal');
+            if(data.length === 0) {
+                container.innerHTML = "<p>Soal belum tersedia untuk kelas dan mapel ini.</p>";
+                return;
+            }
+            
+            data.forEach((item, index) => {
+                container.innerHTML += `
+                    <div class="soal-item">
+                        <p><strong>${index + 1}. ${item.pertanyaan}</strong></p>
+                        <label><input type="radio" name="soal${index}" value="A" required> ${item.opsiA}</label><br>
+                        <label><input type="radio" name="soal${index}" value="B"> ${item.opsiB}</label><br>
+                        <label><input type="radio" name="soal${index}" value="C"> ${item.opsiC}</label><br>
+                        <label><input type="radio" name="soal${index}" value="D"> ${item.opsiD}</label>
+                    </div>
+                `;
+            });
+        });
+    }
+
+    // Mengirim Jawaban ke Spreadsheet
+    document.getElementById('formUjian').addEventListener('submit', e => {
+        e.preventDefault();
+        const formData = new FormData();
+        formData.append('nama', document.getElementById('nama').value);
+        formData.append('kelas', document.getElementById('kelas').value);
+        formData.append('mapel', document.getElementById('mapel').value);
+        
+        // Mengumpulkan semua jawaban radio button
+        const inputs = document.querySelectorAll('input[type="radio"]:checked');
+        let hasilJawaban = "";
+        inputs.forEach(input => hasilJawaban += `${input.name}:${input.value}, `);
+        formData.append('jawaban', hasilJawaban);
+
+        fetch(scriptURL, { method: 'POST', body: formData})
+        .then(response => {
+            alert("Terima kasih! Jawaban Anda telah terkirim.");
+            location.reload();
+        })
+        .catch(error => console.error('Error!', error.message));
+    });
 </script>
 
 </body>
