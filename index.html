@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Input Bank Soal Prakarya</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #eef2f3; padding: 40px; }
+        .form-container { max-width: 500px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #333; }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
+        input[type="text"], textarea, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #3498db; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; margin-top: 10px; }
+        button:hover { background: #2980b9; }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>Input Soal Baru</h2>
+    <form id="soalForm" action="https://script.google.com/macros/s/AKfycbzF0UERX17GneZxHMriGipdr5ryKtrGw_ekL0Im_KMYtQGINpI7a9jIw2KJ9YT2j44I7w/exec" method="POST">
+        
+        <div class="input-group">
+            <label>Pertanyaan:</label>
+            <textarea name="pertanyaan" rows="3" required placeholder="Tulis soal di sini..."></textarea>
+        </div>
+
+        <div class="input-group">
+            <label>Opsi A:</label>
+            <input type="text" name="opsiA" required>
+        </div>
+
+        <div class="input-group">
+            <label>Opsi B:</label>
+            <input type="text" name="opsiB" required>
+        </div>
+
+        <div class="input-group">
+            <label>Opsi C:</label>
+            <input type="text" name="opsiC" required>
+        </div>
+
+        <div class="input-group">
+            <label>Opsi D:</label>
+            <input type="text" name="opsiD" required>
+        </div>
+
+        <div class="input-group">
+            <label>Jawaban Benar:</label>
+            <select name="jawaban">
+                <option value="A">Opsi A</option>
+                <option value="B">Opsi B</option>
+                <option value="C">Opsi C</option>
+                <option value="D">Opsi D</option>
+            </select>
+        </div>
+
+        <button type="submit">Simpan ke Spreadsheet</button>
+    </form>
+</div>
+
+<script>
+    document.getElementById('soalForm').onsubmit = function() {
+        alert("Mengirim data soal ke Spreadsheet...");
+    };
+</script>
+
+</body>
+</html>
